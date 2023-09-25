@@ -66,6 +66,15 @@ void test_init_null (void)
 }
 
 /**
+ *  @brief Deinitialization: Null-pointer check
+ */
+void test_deinit_null (void)
+{
+    bool ret = em_buf_deinit(NULL);
+    TEST_ASSERT_EQUAL(false, ret);
+}
+
+/**
  *  @brief Insert one line: Null-pointer check
  */
 void test_line_insert_null (void)

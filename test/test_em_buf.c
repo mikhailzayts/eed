@@ -591,3 +591,21 @@ void test_line_move_tail_to_head (void)
     }
 
 }
+
+void test_deinit (void)
+{
+    const char * p_lines[] = {"one", "two", "three", "four", "five"};
+    uint32_t     lines_count   = sizeof(p_lines) / sizeof(p_lines[0]);
+    for (uint32_t idx = 0; idx < lines_count; idx++)
+    {
+        em_buf_line_insert(&g_buf, p_lines[idx], em_buf_len(&g_buf));
+    }
+
+    bool ret = em_buf_deinit(&g_buf);
+
+    TEST_ASSERT_EQUAL(true, ret);
+    TEST_ASSERT_EQUAL(0, em_buf_len(&g_buf));
+    TEST_ASSERT_NOT_EQUAL(0, em_mem_mock_free_call_count());
+    TEST_ASSERT_EQUAL(em_mem_mock_alloc_call_count(), em_mem_mock_free_call_count());
+
+}
