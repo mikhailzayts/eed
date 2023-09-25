@@ -27,7 +27,7 @@ em_buf_line_s * em_buf_line_get_by_idx (em_buf_s * p_buf, uint32_t idx);
 
 bool em_buf_init (em_buf_s * p_buf, const em_mem_iface_s * p_mem_iface)
 {
-    if (NULL == p_buf)
+    if ((NULL == p_buf) || (NULL == p_mem_iface))
     {
         return false;
     }
@@ -79,6 +79,31 @@ bool em_buf_line_insert (em_buf_s * p_buf, const char * p_line, uint32_t pos)
 
     p_buf->len++;
 
+    return true;
+}
+
+bool em_buf_line_remove (em_buf_s * p_buf, uint32_t pos)
+{
+    if ((NULL == p_buf) || (pos >= p_buf->len) || (0 == p_buf->len))
+    {
+        return false;
+    }
+
+    em_buf_line_s * p_removed = em_buf_line_get_by_idx(p_buf, pos);
+    em_buf_line_s * p_next = p_removed->p_next;
+    em_buf_line_s * p_prev = p_removed->p_prev;
+
+    p_prev->p_next = p_next;
+    p_next->p_prev = p_prev;
+    p_buf->len--;
+    
+    em_mem_free(&(p_buf->mem_iface), p_removed->p_str);
+    em_mem_free(&(p_buf->mem_iface), p_removed);
+    p_removed = NULL;
+    if (0 == pos)
+    {
+        p_buf->p_head = p_next;
+    }
     return true;
 }
 

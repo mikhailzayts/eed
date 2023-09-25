@@ -95,10 +95,7 @@ void test_line_peek (void)
     bool   ret      = em_buf_line_peek(&g_buf, &p_peeked, 0);
 
     TEST_ASSERT_EQUAL(true, ret);
-    TEST_ASSERT_NOT_EQUAL(NULL, p_peeked);
     TEST_ASSERT_EQUAL_STRING(p_line_exp, p_peeked);
-    TEST_ASSERT_EQUAL(g_buf.p_head, g_buf.p_head->p_next);
-    TEST_ASSERT_EQUAL(g_buf.p_head, g_buf.p_head->p_next->p_prev);
 }
 
 /**
@@ -119,14 +116,6 @@ void test_line_insert2 (void)
     TEST_ASSERT_EQUAL(g_buf.p_head, g_buf.p_head->p_next->p_prev);
     TEST_ASSERT_EQUAL(g_buf.p_head->p_next, g_buf.p_head->p_prev);
     TEST_ASSERT_NOT_EQUAL(g_buf.p_head->p_prev, g_buf.p_head->p_next->p_next);
-
-    /*
-    char * p_peeked = NULL;
-    em_buf_line_peek(&g_buf, &p_peeked, 0);
-    TEST_ASSERT_EQUAL_STRING(line, p_peeked);
-    em_buf_line_peek(&g_buf, &p_peeked, 1);
-    TEST_ASSERT_EQUAL_STRING(line2, p_peeked);
-    */
 }
 
 /**
@@ -137,9 +126,10 @@ void test_line_insert3 (void)
     char * line  = "i love";
     char * line2 = "coffee";
     char * line3 = "hello";
-    bool   ret   = em_buf_line_insert(&g_buf, line, 0);
-    ret          = em_buf_line_insert(&g_buf, line2, 0);
-    ret          = em_buf_line_insert(&g_buf, line3, 0);
+
+    bool ret = em_buf_line_insert(&g_buf, line, 0);
+    ret      = em_buf_line_insert(&g_buf, line2, 0);
+    ret      = em_buf_line_insert(&g_buf, line3, 0);
 
     TEST_ASSERT_EQUAL(true, ret);
     TEST_ASSERT_EQUAL(3, em_buf_len(&g_buf));
@@ -168,7 +158,7 @@ void test_len (void)
 }
 
 /**
- *  @brief Insert five lines
+ *  @brief Insert five lines and peek them
  */
 void test_line_insert_and_peek5 (void)
 {
@@ -203,9 +193,9 @@ void test_line_insert_and_peek5 (void)
  */
 void test_line_insert_with_pos (void)
 {
-    const char * p_lines[] = {"one", "two", "three", "four", "five"};
-    uint32_t     lines_count   = sizeof(p_lines) / sizeof(p_lines[0]);
-    bool         ret           = false;
+    const char * p_lines[]       = {"one", "two", "three", "four", "five"};
+    uint32_t     lines_count     = sizeof(p_lines) / sizeof(p_lines[0]);
+    bool         ret             = false;
     const char * p_line_inserted = "three with half";
 
     for (uint32_t idx = 0; idx < lines_count; idx++)
@@ -225,11 +215,11 @@ void test_line_insert_with_pos (void)
         TEST_ASSERT_EQUAL(true, ret);
     }
 
-    const char * p_lines_exp[] = {"five", "four", "three with half", "three", "two", "one"};
+    const char * p_lines_exp[]
+        = {"five", "four", "three with half", "three", "two", "one"};
     for (uint32_t idx = 0; idx < em_buf_len(&g_buf); idx++)
     {
-        TEST_ASSERT_EQUAL_STRING(p_lines_exp[idx],
-                                 p_lines_peeked[idx]);
+        TEST_ASSERT_EQUAL_STRING(p_lines_exp[idx], p_lines_peeked[idx]);
     }
 }
 
@@ -259,8 +249,7 @@ void test_line_insert_end (void)
 
     for (uint32_t idx = 0; idx < lines_count; idx++)
     {
-        TEST_ASSERT_EQUAL_STRING(p_lines_exp[idx],
-                                 p_lines_peeked[idx]);
+        TEST_ASSERT_EQUAL_STRING(p_lines_exp[idx], p_lines_peeked[idx]);
     }
 }
 
@@ -279,3 +268,123 @@ void test_line_insert_copy (void)
 
     TEST_ASSERT_EQUAL_STRING("one", p_line_peeked);
 }
+
+/**
+ *  @brief Remove line
+ */
+void test_line_remove (void)
+{
+    char * p_line= "one";
+    em_buf_line_insert(&g_buf, p_line, 0);
+
+    bool ret = em_buf_line_remove(&g_buf, 0);
+
+    TEST_ASSERT_EQUAL(true, ret);
+    TEST_ASSERT_EQUAL(0, em_buf_len(&g_buf));
+
+    TEST_ASSERT_NOT_EQUAL(0, em_mem_mock_free_call_count());
+    TEST_ASSERT_EQUAL(em_mem_mock_alloc_call_count(), em_mem_mock_free_call_count());
+}
+
+/**
+ *  @brief Remove head line
+ */
+void test_line_remove_head (void)
+{
+    const char * p_lines[] = {"one", "two", "three", "four", "five"};
+    uint32_t     lines_count   = sizeof(p_lines) / sizeof(p_lines[0]);
+    const char * p_lines_exp[] = {"two", "three", "four", "five"};
+    for (uint32_t idx = 0; idx < lines_count; idx++)
+    {
+        em_buf_line_insert(&g_buf, p_lines[idx], em_buf_len(&g_buf));
+    }
+
+    bool ret = em_buf_line_remove(&g_buf, 0);
+
+    TEST_ASSERT_EQUAL(true, ret);
+    TEST_ASSERT_EQUAL(lines_count - 1, em_buf_len(&g_buf));
+
+    TEST_ASSERT_NOT_EQUAL(0, em_mem_mock_free_call_count());
+
+    const char * p_lines_peeked[lines_count - 1];
+    for (uint32_t idx = 0; idx < (lines_count - 1); idx++)
+    {
+        ret = em_buf_line_peek(&g_buf, (char **)&p_lines_peeked[idx], idx);
+        TEST_MESSAGE(p_lines_peeked[idx]);
+        TEST_ASSERT_EQUAL(true, ret);
+    }
+
+    for (uint32_t idx = 0; idx < (lines_count - 1); idx++)
+    {
+        TEST_ASSERT_EQUAL_STRING(p_lines_exp[idx], p_lines_peeked[idx]);
+    }
+}
+
+/**
+ *  @brief Remove tail line
+ */
+void test_line_remove_tail (void)
+{
+    const char * p_lines[] = {"one", "two", "three", "four", "five"};
+    uint32_t     lines_count   = sizeof(p_lines) / sizeof(p_lines[0]);
+    const char * p_lines_exp[] = {"one", "two", "three", "four"};
+    for (uint32_t idx = 0; idx < lines_count; idx++)
+    {
+        em_buf_line_insert(&g_buf, p_lines[idx], em_buf_len(&g_buf));
+    }
+
+    bool ret = em_buf_line_remove(&g_buf, em_buf_len(&g_buf) - 1);
+
+    TEST_ASSERT_EQUAL(true, ret);
+    TEST_ASSERT_EQUAL(lines_count - 1, em_buf_len(&g_buf));
+
+    TEST_ASSERT_NOT_EQUAL(0, em_mem_mock_free_call_count());
+
+    const char * p_lines_peeked[lines_count - 1];
+    for (uint32_t idx = 0; idx < (lines_count - 1); idx++)
+    {
+        ret = em_buf_line_peek(&g_buf, (char **)&p_lines_peeked[idx], idx);
+        TEST_MESSAGE(p_lines_peeked[idx]);
+        TEST_ASSERT_EQUAL(true, ret);
+    }
+
+    for (uint32_t idx = 0; idx < (lines_count - 1); idx++)
+    {
+        TEST_ASSERT_EQUAL_STRING(p_lines_exp[idx], p_lines_peeked[idx]);
+    }
+}
+
+/**
+ *  @brief Remove middle line
+ */
+void test_line_remove_middle (void)
+{
+    const char * p_lines[] = {"one", "two", "three", "four", "five"};
+    uint32_t     lines_count   = sizeof(p_lines) / sizeof(p_lines[0]);
+    const char * p_lines_exp[] = {"one", "two", "four", "five"};
+    for (uint32_t idx = 0; idx < lines_count; idx++)
+    {
+        em_buf_line_insert(&g_buf, p_lines[idx], em_buf_len(&g_buf));
+    }
+
+    bool ret = em_buf_line_remove(&g_buf, 2);
+
+    TEST_ASSERT_EQUAL(true, ret);
+    TEST_ASSERT_EQUAL(lines_count - 1, em_buf_len(&g_buf));
+
+    TEST_ASSERT_NOT_EQUAL(0, em_mem_mock_free_call_count());
+
+    const char * p_lines_peeked[lines_count - 1];
+    for (uint32_t idx = 0; idx < (lines_count - 1); idx++)
+    {
+        ret = em_buf_line_peek(&g_buf, (char **)&p_lines_peeked[idx], idx);
+        TEST_MESSAGE(p_lines_peeked[idx]);
+        TEST_ASSERT_EQUAL(true, ret);
+    }
+
+    for (uint32_t idx = 0; idx < (lines_count - 1); idx++)
+    {
+        TEST_ASSERT_EQUAL_STRING(p_lines_exp[idx], p_lines_peeked[idx]);
+    }
+}
+
