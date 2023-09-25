@@ -107,6 +107,50 @@ bool em_buf_line_remove (em_buf_s * p_buf, uint32_t pos)
     return true;
 }
 
+bool em_buf_line_copy (em_buf_s * p_buf, uint32_t pos, uint32_t dest)
+{
+    if ((NULL == p_buf) || (pos >= p_buf->len) || (0 == p_buf->len))
+    {
+        return false;
+    }
+
+    em_buf_line_s * p_copied = em_buf_line_get_by_idx(p_buf, pos);
+    return em_buf_line_insert(p_buf, p_copied->p_str, dest);
+}
+
+bool em_buf_line_move (em_buf_s * p_buf, uint32_t pos, uint32_t dest)
+{
+    if ((NULL == p_buf) || (pos >= p_buf->len) || (0 == p_buf->len))
+    {
+        return false;
+    }
+
+    em_buf_line_s * p_moved = em_buf_line_get_by_idx(p_buf, pos);
+    /** Remove from original place */
+    {
+        em_buf_line_s * p_next = p_moved->p_next;
+        em_buf_line_s * p_prev = p_moved->p_prev;
+
+        p_prev->p_next = p_next;
+        p_next->p_prev = p_prev;
+        if (0 == pos) p_buf->p_head = p_next;
+    }
+
+    /** Paste to destination */
+    em_buf_line_s * p_dest = em_buf_line_get_by_idx(p_buf, dest);
+    em_buf_line_s * p_next = p_dest;
+    em_buf_line_s * p_prev = p_next->p_prev;
+
+    p_moved->p_prev = p_prev;
+    p_moved->p_next = p_next;
+
+    p_prev->p_next = p_moved;
+    p_next->p_prev = p_moved;
+
+    if (0 == dest) p_buf->p_head = p_moved;
+    return true;
+}
+
 bool em_buf_line_peek (em_buf_s * p_buf, char ** pp_line, uint32_t pos)
 {
     if ((NULL == p_buf) || (NULL == pp_line))

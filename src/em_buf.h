@@ -45,6 +45,8 @@ bool em_buf_init (em_buf_s * p_buf, const em_mem_iface_s * p_mem_iface);
 
 bool em_buf_line_insert (em_buf_s * p_buf, const char * p_line, uint32_t pos);
 bool em_buf_line_remove (em_buf_s * p_buf, uint32_t pos);
+bool em_buf_line_copy (em_buf_s * p_buf, uint32_t pos, uint32_t dest);
+bool em_buf_line_move (em_buf_s * p_buf, uint32_t pos, uint32_t dest);
 
 bool em_buf_line_peek (em_buf_s * p_buf, char ** pp_line, uint32_t pos);
 

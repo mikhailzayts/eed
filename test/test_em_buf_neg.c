@@ -115,7 +115,7 @@ void test_len (void)
 }
 
 /**
- *  @brief Try to remove line with invalid position
+ *  @brief Try to remove line with invalid position and Null-pointer
  */
 void test_line_remove_neg (void)
 {
@@ -129,5 +129,41 @@ void test_line_remove_neg (void)
     TEST_ASSERT_EQUAL(false, ret);
 
     ret = em_buf_line_remove(&g_buf, 5);
+    TEST_ASSERT_EQUAL(false, ret);
+}
+
+/**
+ *  @brief Try to copy line with invalid position and Null-pointer
+ */
+void test_line_copy_neg (void)
+{
+    bool ret = em_buf_line_copy(&g_buf, 0, 1);
+    TEST_ASSERT_EQUAL(false, ret);
+
+    char * p_line= "one";
+    em_buf_line_insert(&g_buf, p_line, 0);
+
+    ret = em_buf_line_copy(NULL, 0, 1);
+    TEST_ASSERT_EQUAL(false, ret);
+
+    ret = em_buf_line_copy(&g_buf, 5, 1);
+    TEST_ASSERT_EQUAL(false, ret);
+}
+
+/**
+ *  @brief Try to move line with invalid position and Null-pointer
+ */
+void test_line_move_neg (void)
+{
+    bool ret = em_buf_line_move(&g_buf, 0, 1);
+    TEST_ASSERT_EQUAL(false, ret);
+
+    char * p_line= "one";
+    em_buf_line_insert(&g_buf, p_line, 0);
+
+    ret = em_buf_line_move(NULL, 0, 1);
+    TEST_ASSERT_EQUAL(false, ret);
+
+    ret = em_buf_line_move(&g_buf, 5, 1);
     TEST_ASSERT_EQUAL(false, ret);
 }
