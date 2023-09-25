@@ -1,0 +1,16 @@
+../
+em/
+| .cache/
+| .git/
+| build/
+| mocks/
+| src/
+| test/
+| .clang-format
+| .clang-tidy
+| .gitignore
+| CHANGELOG.md
+| README.md
+| compile_commands.json
+| project.yml
+| test.txt

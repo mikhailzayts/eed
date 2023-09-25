@@ -1,21 +1,12 @@
-# shell_ed
+# em
 
-Zephyr shell with added command for use very basic ed text editor clone
+Em is very basic line-oriented text editor. Simple clone of standard UNIX text editor ed. Designed with platform independence and embedded systems use in mind
 
-## Build
+## Run tests
 
-Set required environment variables. Run this command in the Zephyr root directory:
+Run the following command:
 ```
-source zephyr-env.sh
-```
-
-Build for qemu_x86:
-```
-./build_qemu_x86.sh
-```
-and run:
-```
-./run.sh
+ceedling test:all
 ```
 
 ## Usage
