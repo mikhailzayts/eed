@@ -5,11 +5,25 @@ em/
 | build/
 | mocks/
 | src/
+| | em.h
+| | em_buf.h
+| | em_cmd.h
+| | em_fs.h
+| | em_io.h
+| | em_mem.h
+| | em.c
+| | em_buf.c
+| | em_cmd.c
+| | em_fs.c
+| | em_io.c
+| | em_mem.c
+| | main.c
 | test/
 | .clang-format
 | .clang-tidy
 | .gitignore
 | CHANGELOG.md
+| NetrwTreeListing
 | README.md
 | compile_commands.json
 | project.yml
