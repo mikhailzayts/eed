@@ -1,6 +1,6 @@
 /**
- *  @file   test_em_cmd.c
- *  @brief  em_cmd module unit tests
+ *  @file   test_eed_cmd.c
+ *  @brief  eed_cmd module unit tests
  *
  *  @author Mikhail Zaytsev
  *  @date   20230924
@@ -8,10 +8,10 @@
 
 /** Includes */
 
-#include "em_cmd.h"
-#include "em_buf.h"
-#include "em_mem.h"
-#include "em_mem_mock.h"
+#include "eed_cmd.h"
+#include "eed_buf.h"
+#include "eed_mem.h"
+#include "eed_mem_mock.h"
 #include "unity.h"
 #include <stdbool.h>
 #include <stdint.h>
@@ -25,7 +25,7 @@
         char * p_lines_peeked[lines_count]; \
         for (uint32_t idx = 0; idx < lines_count; idx++) \
         { \
-            ret = em_buf_line_peek(&g_buf, &p_lines_peeked[idx], idx); \
+            ret = eed_buf_line_peek(&g_buf, &p_lines_peeked[idx], idx); \
             TEST_MESSAGE(p_lines_peeked[idx]); \
             TEST_ASSERT_EQUAL(true, ret); \
         } \
@@ -41,7 +41,7 @@
 
 /** Private data */
 
-static em_buf_s g_buf;
+static eed_buf_s g_buf;
 
 /** Private function prototypes */
 
@@ -52,12 +52,12 @@ static em_buf_s g_buf;
  */
 void setUp (void)
 {
-    em_mem_mock_init();
-    em_mem_iface_s mem_iface = {
-        .alloc = em_mem_mock_alloc,
-        .free  = em_mem_mock_free,
+    eed_mem_mock_init();
+    eed_mem_iface_s mem_iface = {
+        .alloc = eed_mem_mock_alloc,
+        .free  = eed_mem_mock_free,
     };
-    bool ret = em_buf_init(&g_buf, &mem_iface);
+    bool ret = eed_buf_init(&g_buf, &mem_iface);
 }
 
 /**
@@ -68,21 +68,21 @@ void tearDown (void)
 }
 
 /**
- *  @brief  Check if em_mem interface compatible with POSIX memory
+ *  @brief  Check if eed_mem interface compatible with POSIX memory
  *          management functions
  */
 void test_init (void)
 {
-    em_buf_s       buf;
-    em_mem_iface_s mem_iface = {
-        .alloc = em_mem_mock_alloc,
-        .free  = em_mem_mock_free,
+    eed_buf_s       buf;
+    eed_mem_iface_s mem_iface = {
+        .alloc = eed_mem_mock_alloc,
+        .free  = eed_mem_mock_free,
     };
-    bool ret = em_buf_init(&buf, &mem_iface);
+    bool ret = eed_buf_init(&buf, &mem_iface);
 
     TEST_ASSERT_EQUAL(true, ret);
     TEST_ASSERT_EQUAL(NULL, buf.p_head);
     TEST_ASSERT_EQUAL(0, buf.len);
-    TEST_ASSERT_EQUAL(em_mem_mock_alloc, buf.mem_iface.alloc);
-    TEST_ASSERT_EQUAL(em_mem_mock_free, buf.mem_iface.free);
+    TEST_ASSERT_EQUAL(eed_mem_mock_alloc, buf.mem_iface.alloc);
+    TEST_ASSERT_EQUAL(eed_mem_mock_free, buf.mem_iface.free);
 }

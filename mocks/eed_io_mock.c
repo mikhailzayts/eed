@@ -1,5 +1,5 @@
 /**
-*  @file   em_io_mock.c
+*  @file   eed_io_mock.c
 *  @brief  IO module mock
 *
 *  @author Mikhail Zaytsev
@@ -8,7 +8,7 @@
 
 /** Includes */
 
-#include "em_io_mock.h"
+#include "eed_io_mock.h"
 
 /** Definitions */
 
@@ -24,17 +24,17 @@
 
 /** Public functions */
 
-void em_io_mock_init(void)
+void eed_io_mock_init(void)
 {
 
 }
 
-char * em_io_mock_gets(char * p_str, size_t size)
+char * eed_io_mock_gets(char * p_str, size_t size)
 {
     return NULL;
 }
 
-int32_t em_io_mock_puts(const char * p_str)
+int32_t eed_io_mock_puts(const char * p_str)
 {
 
     return -1;

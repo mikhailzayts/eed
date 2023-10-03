@@ -1,6 +1,6 @@
 /**
- *  @file   test_em_io.c
- *  @brief  em_io module unit tests
+ *  @file   test_eed_io_mock.c
+ *  @brief  eed_io mock unit tests
  *
  *  @author Mikhail Zaytsev
  *  @date   20230924
@@ -8,13 +8,12 @@
 
 /** Includes */
 
-#include "em_io.h"
-#include "em_io_mock.h"
+#include "eed_io_mock.h"
 #include "unity.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
-#include <stdio.h>
+#include <string.h>
 
 /** Definitions */
 
@@ -40,12 +39,20 @@ void tearDown (void)
 {
 }
 
+void test_iface (void)
+{
+
+}
+
 void test_init (void)
 {
-    em_io_iface_s io_iface =
-    {
-        .gets = em_io_mock_gets,
-        .puts = em_io_mock_puts
-    };
+    char buffer[16];
+    memset(buffer, 0, sizeof(buffer));
+    eed_io_mock_init();
+    char * p_ret = eed_io_mock_gets(buffer, sizeof(buffer) / sizeof(buffer[0]));
+
+    TEST_ASSERT_EQUAL(NULL, p_ret);
+    //char * input[] = {"Hello world\n"};
+    //eed_io_mock_input_set(input);
 
 }

@@ -1,5 +1,5 @@
 /**
- *  @file   em_mem.c
+ *  @file   eed_mem.c
  *  @brief  Memory management dynamic interface
  *
  *  @author Mikhail Zaytsev
@@ -8,7 +8,7 @@
 
 /** Includes */
 
-#include "em_mem.h"
+#include "eed_mem.h"
 
 /** Definitions */
 
@@ -20,12 +20,12 @@
 
 /** Public functions */
 
-void * em_mem_alloc (const em_mem_iface_s * p_iface, size_t size)
+void * eed_mem_alloc (const eed_mem_iface_s * p_iface, size_t size)
 {
     return p_iface->alloc(size);
 }
 
-void em_mem_free (const em_mem_iface_s * p_iface, void * ptr)
+void eed_mem_free (const eed_mem_iface_s * p_iface, void * ptr)
 {
     p_iface->free(ptr);
 }
