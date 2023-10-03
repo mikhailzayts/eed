@@ -24,7 +24,10 @@
 
 void eed_io_mock_init(void);
 
-char * eed_io_mock_gets(char * p_str, size_t size);
-int32_t eed_io_mock_puts(const char * p_str);
+int32_t eed_io_mock_getchar(char * p_chr);
+void eed_io_mock_getchar_buffer_set(const char * p_buffer, size_t size);
+
+int32_t eed_io_mock_putchar(char chr);
+void eed_io_mock_putchar_buffer_set(char * p_buffer, size_t size);
 
 #endif /** __EED_IO_MOCK_H__ */

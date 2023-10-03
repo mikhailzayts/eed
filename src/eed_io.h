@@ -21,14 +21,13 @@
 
 typedef struct eed_io_iface_s
 {
-    char * (* gets)(char * p_str, size_t size);
-    int32_t (* puts)(const char * p_str);
+    int32_t (* getchar)(char * p_chr);
+    int32_t (* putchar)(char chr);
 } eed_io_iface_s;
 
 /** Public function prototypes */
 
-char * eed_io_gets(eed_io_iface_s * p_iface, char * p_str, size_t size);
-char * eed_io_getline(eed_io_iface_s * p_iface, char * p_str, size_t size);
-int32_t eed_io_puts(eed_io_iface_s * p_iface, const char * p_str);
+int32_t eed_io_getchar(const eed_io_iface_s * p_iface, char * p_chr);
+int32_t eed_io_putchar(const eed_io_iface_s * p_iface, char chr);
 
 #endif /** __EED_IO_H__ */
