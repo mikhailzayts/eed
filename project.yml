@@ -37,7 +37,7 @@
     - src/**
   :support:
     - test/support
-    - mocks
+    - mocks/**
   :libraries: []
 
 :defines:

@@ -6,8 +6,8 @@
 *  @date    20231003
 */
 
-#ifndef __EED_FS_H__
-#define __EED_FS_H__
+#ifndef __EED_FS_MOCK_H__
+#define __EED_FS_MOCK_H__
 
 /** Includes */
 
@@ -26,4 +26,4 @@ int32_t eed_fs_mock_file_read(const char * p_file_name, uint8_t * p_content, uin
 int32_t eed_fs_mock_file_size_get(const char * p_file_name);
 int32_t eed_fs_mock_file_delete(const char * p_file_name);
 
-#endif /** __EED_FS_H__ */
+#endif /** __EED_FS_MOCK_H__ */
