@@ -260,3 +260,37 @@ void test_parse_pos_end_with_minus (void)
     TEST_ASSERT_EQUAL(EED_PARSE_WHENCE_END, cmd.end.whence);
     TEST_ASSERT_EQUAL(-4, cmd.end.offset);
 }
+
+/**
+ *  @brief  Parse command line positions range
+ */
+void test_parse_range (void)
+{
+    char * p_str = "0,$q";
+    eed_parse_s cmd = {0};
+    int32_t ret = eed_parse(p_str, &cmd);
+
+    TEST_ASSERT_EQUAL(0, ret);
+    TEST_ASSERT_EQUAL(EED_PARSE_CMD_QUIT, cmd.cmd);
+    TEST_ASSERT_EQUAL(EED_PARSE_WHENCE_START, cmd.start.whence);
+    TEST_ASSERT_EQUAL(0, cmd.start.offset);
+    TEST_ASSERT_EQUAL(EED_PARSE_WHENCE_END, cmd.end.whence);
+    TEST_ASSERT_EQUAL(0, cmd.end.offset);
+}
+
+/**
+ *  @brief  Parse command with complicated line positions range
+ */
+void test_parse_complicated_range (void)
+{
+    char * p_str = ".++10--,$--5q";
+    eed_parse_s cmd = {0};
+    int32_t ret = eed_parse(p_str, &cmd);
+
+    TEST_ASSERT_EQUAL(0, ret);
+    TEST_ASSERT_EQUAL(EED_PARSE_CMD_QUIT, cmd.cmd);
+    TEST_ASSERT_EQUAL(EED_PARSE_WHENCE_CURR, cmd.start.whence);
+    TEST_ASSERT_EQUAL(9, cmd.start.offset);
+    TEST_ASSERT_EQUAL(EED_PARSE_WHENCE_END, cmd.end.whence);
+    TEST_ASSERT_EQUAL(-6, cmd.end.offset);
+}
