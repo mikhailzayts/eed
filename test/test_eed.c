@@ -178,4 +178,43 @@ void test_print_range (void)
     TEST_ASSERT_EQUAL_STRING(content, g_output_buf);
 }
 
+/**
+ *  @brief  Insert lines
+ */
+void test_insert (void)
+{
+    eed_mem_mock_init();
+    eed_ctx_s ctx = {0};
+    int32_t ret = eed_init(&ctx, &g_iface);
+
+    ret = eed_exec(&ctx, "i");
+    ret = eed_exec(&ctx, TEST_STR5);
+    ret = eed_exec(&ctx, TEST_STR4);
+    ret = eed_exec(&ctx, TEST_STR3);
+    ret = eed_exec(&ctx, ".");
+
+    char content[] = 
+    {
+        TEST_STR3
+        TEST_STR4
+        TEST_STR5
+    };
+
+    ret = eed_exec(&ctx, "1,$p");
+
+    TEST_MESSAGE(g_output_buf);
+    TEST_ASSERT_EQUAL_STRING(content, g_output_buf);
+
+    eed_deinit(&ctx);
+
+    TEST_ASSERT_EQUAL(eed_mem_mock_alloc_call_count(), eed_mem_mock_free_call_count());
+}
+
+/**
+ *  @brief  Append lines
+ */
+void test_append (void)
+{
+    TEST_IGNORE_MESSAGE("TODO");
+}
 

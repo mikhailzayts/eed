@@ -15,6 +15,8 @@
 #include "eed_parse.h"
 #include "eed_cmd.h"
 
+#include <string.h>
+
 /** Definitions */
 
 /** Structures and types */
@@ -51,6 +53,19 @@ int32_t eed_deinit (eed_ctx_s * p_ctx)
 
 int32_t eed_exec (eed_ctx_s * p_ctx, const char * p_command)
 {
+    if (true == p_ctx->mode)
+    {
+        if (('.' == p_command[0]) && (1 == strlen(p_command)))
+        {
+            p_ctx->mode = false;
+        }
+        else
+        {
+            eed_buf_line_insert(p_ctx->p_buf, p_command, p_ctx->cursor);
+        }
+        return 0;
+    }
+
     eed_parse_s parsed = {0};
     int32_t     ret    = eed_parse(p_command, &parsed);
 
@@ -69,6 +84,11 @@ int32_t eed_exec (eed_ctx_s * p_ctx, const char * p_command)
         case EED_PARSE_CMD_PRINT:
             ret = eed_cmd_print(p_ctx->p_iface, p_ctx->p_buf, start_idx, end_idx);
             /** TODO: check return value */
+            break;
+
+        case EED_PARSE_CMD_INSERT:
+            p_ctx->mode = true;
+            p_ctx->cursor = start_idx;
             break;
 
         default:

@@ -313,3 +313,29 @@ void test_parse_move (void)
     TEST_ASSERT_EQUAL(EED_PARSE_WHENCE_CURR, cmd.dest.whence);
     TEST_ASSERT_EQUAL(2, cmd.dest.offset);
 }
+
+/**
+ *  @brief  Parse insert command
+ */
+void test_parse_insert (void)
+{
+    char * p_str = "i";
+    eed_parse_s cmd = {0};
+    int32_t ret = eed_parse(p_str, &cmd);
+
+    TEST_ASSERT_EQUAL(0, ret);
+    TEST_ASSERT_EQUAL(EED_PARSE_CMD_INSERT, cmd.cmd);
+}
+
+/**
+ *  @brief  Parse append command
+ */
+void test_parse_append (void)
+{
+    char * p_str = "a";
+    eed_parse_s cmd = {0};
+    int32_t ret = eed_parse(p_str, &cmd);
+
+    TEST_ASSERT_EQUAL(0, ret);
+    TEST_ASSERT_EQUAL(EED_PARSE_CMD_APPEND, cmd.cmd);
+}

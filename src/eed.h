@@ -26,6 +26,8 @@ typedef struct eed_ctx_s
     char * p_filename;
     eed_iface_s * p_iface;
     eed_buf_s * p_buf;
+
+    bool mode;
 } eed_ctx_s;
 
 /** Public function prototypes */
