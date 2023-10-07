@@ -16,6 +16,7 @@
 
 #include "eed_mem.h"
 #include "eed_fs.h"
+#include "eed_io.h"
 #include "eed_buf.h"
 #include "eed_iface.h"
 
@@ -118,12 +119,12 @@ void test_cmd_write (void)
     TEST_ASSERT_EQUAL(eed_mem_mock_alloc_call_count(), eed_mem_mock_free_call_count());
 }
 
-/** TODO: add negative tests */
-
 /**
- *  @brief  Insert command (i)
+ *  @brief  Print command (p)
  */
 void test_cmd_print (void)
 {
-    TEST_IGNORE();
+    TEST_IGNORE_MESSAGE("TODO");
 }
+
+/** TODO: add negative tests */

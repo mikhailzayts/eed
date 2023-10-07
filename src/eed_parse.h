@@ -34,6 +34,7 @@ typedef enum eed_parse_cmd_e
     EED_PARSE_CMD_INSERT,
     EED_PARSE_CMD_APPEND,
     EED_PARSE_CMD_CHANGE,
+    EED_PARSE_CMD_DELETE,
 
     EED_PARSE_CMD_EDIT,
     EED_PARSE_CMD_FILE,
@@ -43,6 +44,7 @@ typedef enum eed_parse_cmd_e
     EED_PARSE_CMD_MOVE,
     EED_PARSE_CMD_UNDO,
     EED_PARSE_CMD_COPY,
+    EED_PARSE_CMD_JOIN,
 
     EED_PARSE_CMD_QUIT,
 } eed_parse_cmd_e;

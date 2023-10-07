@@ -113,5 +113,36 @@ error:
     return -1;
 }
 
+int32_t eed_cmd_print (const eed_iface_s * p_iface, const eed_buf_s * p_buf,
+                       uint32_t start_idx, uint32_t end_idx)
+{
+    if ((NULL == p_iface) || (NULL == p_buf))
+    {
+        return -1;
+    }
+
+    int32_t ret = 0;
+    for (uint32_t idx = start_idx; idx <= end_idx; idx++)
+    {
+        char *  p_str = NULL;
+        bool    is_ok = eed_buf_line_peek((eed_buf_s *)p_buf, &p_str, idx);
+        int32_t line_len = eed_buf_line_len((eed_buf_s *)p_buf, idx);
+        if (0 > line_len)
+        {
+            return -1;
+        }
+        for (uint32_t idx = 0; idx < line_len; idx++)
+        {
+            ret = eed_io_putchar(&(p_iface->io_iface), p_str[idx]);
+            if (0 > ret)
+            {
+                return -1;
+            }
+        }
+    }
+
+    return 0;
+}
+
 /** Private functions */
 

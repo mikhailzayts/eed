@@ -22,12 +22,12 @@
 
 /** Private function prototypes */
 
-eed_buf_line_s * _line_get_by_idx (eed_buf_s * p_buf, uint32_t idx);
-void             _line_insert (eed_buf_s * p_buf, eed_buf_line_s * p_line,
+static eed_buf_line_s * _line_get_by_idx (eed_buf_s * p_buf, uint32_t idx);
+static void             _line_insert (eed_buf_s * p_buf, eed_buf_line_s * p_line,
                                eed_buf_line_s * p_dest);
-void             _line_remove (eed_buf_s * p_buf, eed_buf_line_s * p_line);
-eed_buf_line_s * _mem_alloc (eed_buf_s * p_buf, const char * p_str);
-void             _mem_free (eed_buf_s * p_buf, eed_buf_line_s * p_line);
+static void             _line_remove (eed_buf_s * p_buf, eed_buf_line_s * p_line);
+static eed_buf_line_s * _mem_alloc (eed_buf_s * p_buf, const char * p_str);
+static void             _mem_free (eed_buf_s * p_buf, eed_buf_line_s * p_line);
 
 /** Public functions */
 
@@ -169,7 +169,7 @@ int32_t eed_buf_size (eed_buf_s * p_buf)
 
 /** Private functions */
 
-eed_buf_line_s * _line_get_by_idx (eed_buf_s * p_buf, uint32_t idx)
+static eed_buf_line_s * _line_get_by_idx (eed_buf_s * p_buf, uint32_t idx)
 {
     if ((NULL == p_buf) || (idx >= p_buf->size))
     {
@@ -185,7 +185,7 @@ eed_buf_line_s * _line_get_by_idx (eed_buf_s * p_buf, uint32_t idx)
     return p_cursor;
 }
 
-void _line_insert (eed_buf_s * p_buf, eed_buf_line_s * p_line,
+static void _line_insert (eed_buf_s * p_buf, eed_buf_line_s * p_line,
                    eed_buf_line_s * p_dest)
 {
     if ((NULL == p_buf) || (NULL == p_line) || (NULL == p_dest))
@@ -202,7 +202,7 @@ void _line_insert (eed_buf_s * p_buf, eed_buf_line_s * p_line,
     p_next->p_prev = p_line;
 }
 
-void _line_remove (eed_buf_s * p_buf, eed_buf_line_s * p_line)
+static void _line_remove (eed_buf_s * p_buf, eed_buf_line_s * p_line)
 {
     if ((NULL == p_buf) || (NULL == p_line))
     {
@@ -218,7 +218,7 @@ void _line_remove (eed_buf_s * p_buf, eed_buf_line_s * p_line)
     if (p_buf->p_head == p_line) p_buf->p_head = p_next;
 }
 
-eed_buf_line_s * _mem_alloc (eed_buf_s * p_buf, const char * p_str)
+static eed_buf_line_s * _mem_alloc (eed_buf_s * p_buf, const char * p_str)
 {
     if ((NULL == p_buf) || (NULL == p_str))
     {
@@ -236,7 +236,7 @@ eed_buf_line_s * _mem_alloc (eed_buf_s * p_buf, const char * p_str)
     return p_new;
 }
 
-void _mem_free (eed_buf_s * p_buf, eed_buf_line_s * p_line)
+static void _mem_free (eed_buf_s * p_buf, eed_buf_line_s * p_line)
 {
     if ((NULL == p_buf) || (NULL == p_line))
     {

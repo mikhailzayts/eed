@@ -19,13 +19,13 @@
 
 /** Private function prototypes */
 
-bool _is_letter (char chr);
-bool _is_digit (char chr);
-uint8_t _letter_to_digit (char chr);
-eed_parse_cmd_e _parse_cmd (char chr);
-void _whence_def (eed_parse_pos_s * p_pos, eed_parse_whence_e whence);
-void _digit_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset, char chr);
-void _symbol_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset, int32_t * p_sign_offset, char chr);
+static bool _is_letter (char chr);
+static bool _is_digit (char chr);
+static uint8_t _letter_to_digit (char chr);
+static eed_parse_cmd_e _parse_cmd (char chr);
+static void _whence_def (eed_parse_pos_s * p_pos, eed_parse_whence_e whence);
+static void _digit_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset, char chr);
+static void _symbol_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset, int32_t * p_sign_offset, char chr);
 
 /** Public functions */
 
@@ -85,17 +85,17 @@ int32_t eed_parse (const char * p_str, eed_parse_s * p_cmd)
 
 /** Private functions */
 
-bool _is_letter (char chr)
+static bool _is_letter (char chr)
 {
     return ('A' <= chr) && ('z' >= chr);
 }
 
-bool _is_digit (char chr)
+static bool _is_digit (char chr)
 {
     return ('0' <= chr) && ('9' >= chr);
 }
 
-eed_parse_cmd_e _parse_cmd (char chr)
+static eed_parse_cmd_e _parse_cmd (char chr)
 {
     switch (chr)
     {
@@ -103,8 +103,28 @@ eed_parse_cmd_e _parse_cmd (char chr)
             return EED_PARSE_CMD_PRINT;
         break;
 
+        case 'i':
+            return EED_PARSE_CMD_INSERT;
+        break;
+
+        case 'a':
+            return EED_PARSE_CMD_APPEND;
+        break;
+
+        case 'c':
+            return EED_PARSE_CMD_CHANGE;
+        break;
+
+        case 'd':
+            return EED_PARSE_CMD_DELETE;
+        break;
+
         case 'm':
             return EED_PARSE_CMD_MOVE;
+        break;
+
+        case 'j':
+            return EED_PARSE_CMD_JOIN;
         break;
 
         case 'q':
@@ -117,7 +137,7 @@ eed_parse_cmd_e _parse_cmd (char chr)
     }
 }
 
-void _whence_def (eed_parse_pos_s * p_pos, eed_parse_whence_e whence)
+static void _whence_def (eed_parse_pos_s * p_pos, eed_parse_whence_e whence)
 {
     if (NULL == p_pos)
     {
@@ -130,12 +150,12 @@ void _whence_def (eed_parse_pos_s * p_pos, eed_parse_whence_e whence)
     }
 }
 
-uint8_t _letter_to_digit (char chr)
+static uint8_t _letter_to_digit (char chr)
 {
     return chr - 48;
 }
 
-void _digit_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset, char chr)
+static void _digit_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset, char chr)
 {
     if (0 == *p_tmp_offset)
     {
@@ -161,7 +181,7 @@ void _digit_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset, char chr)
     *p_tmp_offset = 0;
 }
 
-void _symbol_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset, int32_t * p_sign_offset, char chr)
+static void _symbol_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset, int32_t * p_sign_offset, char chr)
 {
         switch (chr)
         {
