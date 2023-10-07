@@ -45,6 +45,16 @@ int32_t eed_parse (const char * p_str, eed_parse_s * p_cmd)
         {
             p_cmd->cmd = _parse_cmd(p_str[idx]);
             _whence_def(p_pos, EED_PARSE_WHENCE_CURR);
+
+            p_pos->offset += sign_offset + tmp_offset;
+            sign_offset = 0;
+            tmp_offset = 0;
+            if (p_pos == &(p_cmd->start))
+            {
+                p_cmd->end = p_cmd->start;
+            }
+
+            p_pos = &(p_cmd->dest);
         }
 
         _symbol_process (p_pos, &tmp_offset, &sign_offset, p_str[idx]);
@@ -91,6 +101,10 @@ eed_parse_cmd_e _parse_cmd (char chr)
     {
         case 'p':
             return EED_PARSE_CMD_PRINT;
+        break;
+
+        case 'm':
+            return EED_PARSE_CMD_MOVE;
         break;
 
         case 'q':

@@ -294,3 +294,22 @@ void test_parse_complicated_range (void)
     TEST_ASSERT_EQUAL(EED_PARSE_WHENCE_END, cmd.end.whence);
     TEST_ASSERT_EQUAL(-6, cmd.end.offset);
 }
+
+/**
+ *  @brief  Parse move command
+ */
+void test_parse_move (void)
+{
+    char * p_str = ".,$m++";
+    eed_parse_s cmd = {0};
+    int32_t ret = eed_parse(p_str, &cmd);
+
+    TEST_ASSERT_EQUAL(0, ret);
+    TEST_ASSERT_EQUAL(EED_PARSE_CMD_MOVE, cmd.cmd);
+    TEST_ASSERT_EQUAL(EED_PARSE_WHENCE_CURR, cmd.start.whence);
+    TEST_ASSERT_EQUAL(0, cmd.start.offset);
+    TEST_ASSERT_EQUAL(EED_PARSE_WHENCE_END, cmd.end.whence);
+    TEST_ASSERT_EQUAL(0, cmd.end.offset);
+    TEST_ASSERT_EQUAL(EED_PARSE_WHENCE_CURR, cmd.dest.whence);
+    TEST_ASSERT_EQUAL(2, cmd.dest.offset);
+}
