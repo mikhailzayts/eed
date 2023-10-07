@@ -56,6 +56,7 @@ typedef struct eed_parse_s
 {
     eed_parse_pos_s start;
     eed_parse_pos_s end;
+    eed_parse_pos_s dest;
 
     eed_parse_cmd_e cmd;
 
