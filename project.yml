@@ -97,8 +97,8 @@
   :load_paths:
     - "#{Ceedling.load_path}"
   :enabled:
-    #- stdout_pretty_tests_report
-    - colour_report
+    - stdout_pretty_tests_report
+      #- colour_report
     - module_generator
     - compile_commands_json
 ...

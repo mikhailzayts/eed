@@ -3,45 +3,45 @@
  *  @brief  eed_cmd module unit tests
  *
  *  @author Mikhail Zaytsev
- *  @date   20230924
+ *  @date   20231007
  */
 
 /** Includes */
 
-#include "eed_cmd.h"
-#include "eed_buf.h"
-#include "eed_mem.h"
-#include "eed_mem_mock.h"
 #include "unity.h"
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <string.h>
+
+#include "eed_mem.h"
+#include "eed_fs.h"
+#include "eed_buf.h"
+#include "eed_iface.h"
+
+#include "eed_io_mock.h"
+#include "eed_fs_posix.h"
+#include "eed_mem_mock.h"
+#include "eed_cmd.h"
 
 /** Definitions */
 
-#define TEST_PEAK_AND_CHECK(p_lines_exp, lines_count) \
-    do \
-    { \
-        char * p_lines_peeked[lines_count]; \
-        for (uint32_t idx = 0; idx < lines_count; idx++) \
-        { \
-            ret = eed_buf_line_peek(&g_buf, &p_lines_peeked[idx], idx); \
-            TEST_MESSAGE(p_lines_peeked[idx]); \
-            TEST_ASSERT_EQUAL(true, ret); \
-        } \
-        for (uint32_t idx = 0; idx < lines_count; idx++) \
-        { \
-            TEST_ASSERT_EQUAL_STRING(p_lines_exp[idx], p_lines_peeked[idx]); \
-        } \
-    } while (0)
-
-#define TEST_ARRAY_SIZE(arr)    (sizeof(arr) / sizeof(arr[0]))
+#define TEST_FIRST_STR  "first"
+#define TEST_SECOND_STR  "second"
+#define TEST_THIRD_STR  "third"
 
 /** Structures and types */
 
 /** Private data */
 
 static eed_buf_s g_buf;
+static eed_iface_s g_iface;
+static const char g_content[] = 
+{
+    TEST_FIRST_STR "\n"
+    TEST_SECOND_STR "\n"
+    TEST_THIRD_STR "\n"
+};
 
 /** Private function prototypes */
 
@@ -52,12 +52,17 @@ static eed_buf_s g_buf;
  */
 void setUp (void)
 {
+    g_iface.io_iface.getchar = eed_io_mock_getchar,
+    g_iface.io_iface.putchar = eed_io_mock_putchar,
+    g_iface.fs_iface.file_read = eed_fs_posix_file_read,
+    g_iface.fs_iface.file_write = eed_fs_posix_file_write,
+    g_iface.fs_iface.file_size_get = eed_fs_posix_file_size_get,
+    g_iface.fs_iface.file_delete = eed_fs_posix_file_delete,
+    g_iface.mem_iface.alloc = eed_mem_mock_alloc,
+    g_iface.mem_iface.free = eed_mem_mock_free,
+
     eed_mem_mock_init();
-    eed_mem_iface_s mem_iface = {
-        .alloc = eed_mem_mock_alloc,
-        .free  = eed_mem_mock_free,
-    };
-    bool ret = eed_buf_init(&g_buf, &mem_iface);
+    bool ret = eed_buf_init(&g_buf, &(g_iface.mem_iface));
 }
 
 /**
@@ -68,21 +73,57 @@ void tearDown (void)
 }
 
 /**
- *  @brief  Check if eed_mem interface compatible with POSIX memory
- *          management functions
+ *  @brief  Read command (r <filename>)
  */
-void test_init (void)
+void test_cmd_read (void)
 {
-    eed_buf_s       buf;
-    eed_mem_iface_s mem_iface = {
-        .alloc = eed_mem_mock_alloc,
-        .free  = eed_mem_mock_free,
-    };
-    bool ret = eed_buf_init(&buf, &mem_iface);
+    eed_fs_posix_file_write("edit.txt", (uint8_t *)g_content, sizeof(g_content));
+    int32_t ret = 0;
+    ret = eed_cmd_read(&g_iface, "edit.txt", &g_buf);
 
-    TEST_ASSERT_EQUAL(true, ret);
-    TEST_ASSERT_EQUAL(NULL, buf.p_head);
-    TEST_ASSERT_EQUAL(0, buf.len);
-    TEST_ASSERT_EQUAL(eed_mem_mock_alloc, buf.mem_iface.alloc);
-    TEST_ASSERT_EQUAL(eed_mem_mock_free, buf.mem_iface.free);
+    TEST_ASSERT_EQUAL(0, ret);
+
+    char * p_str = NULL;
+    eed_buf_line_peek(&g_buf, &p_str, 0);
+    TEST_ASSERT_EQUAL_STRING_LEN(TEST_FIRST_STR, p_str, strlen(p_str));
+    eed_buf_line_peek(&g_buf, &p_str, 1);
+    TEST_ASSERT_EQUAL_STRING_LEN(TEST_SECOND_STR, p_str, strlen(p_str));
+    eed_buf_line_peek(&g_buf, &p_str, 2);
+    TEST_ASSERT_EQUAL_STRING_LEN(TEST_THIRD_STR, p_str, strlen(p_str));
+
+    eed_buf_deinit(&g_buf);
+    TEST_ASSERT_EQUAL(eed_mem_mock_alloc_call_count(), eed_mem_mock_free_call_count());
+}
+
+/**
+ *  @brief  Write command (w <filename>)
+ */
+void test_cmd_write (void)
+{
+    eed_buf_line_insert(&g_buf, TEST_FIRST_STR, eed_buf_size(&g_buf));
+    eed_buf_line_insert(&g_buf, TEST_SECOND_STR, eed_buf_size(&g_buf));
+    eed_buf_line_insert(&g_buf, TEST_THIRD_STR, eed_buf_size(&g_buf));
+    int32_t ret = 0;
+    ret = eed_cmd_write(&g_iface, "write.txt", &g_buf);
+
+    TEST_ASSERT_EQUAL(0, ret);
+
+    uint32_t size = (uint32_t)eed_fs_file_size_get(&(g_iface.fs_iface), "write.txt");
+    char * p_written = (char *)eed_mem_alloc(&(g_iface.mem_iface), size);
+    eed_fs_posix_file_read("write.txt", (uint8_t *)p_written, size);
+    TEST_ASSERT_EQUAL_STRING_LEN(g_content, p_written, sizeof(g_content));
+    eed_mem_free(&(g_iface.mem_iface), p_written);
+
+    eed_buf_deinit(&g_buf);
+    TEST_ASSERT_EQUAL(eed_mem_mock_alloc_call_count(), eed_mem_mock_free_call_count());
+}
+
+/** TODO: add negative tests */
+
+/**
+ *  @brief  Insert command (i)
+ */
+void test_cmd_print (void)
+{
+    TEST_IGNORE();
 }

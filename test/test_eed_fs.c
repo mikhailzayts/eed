@@ -12,7 +12,7 @@
 #include <stdbool.h>
 #include <string.h>
 
-#include "eed_fs_mock.h"
+#include "eed_fs_posix.h"
 #include "eed_fs.h"
 
 /** Definitions */
@@ -30,24 +30,31 @@ static char g_buffer_exp[] = {"hello world\n"};
 
 void setUp(void) 
 {
-    g_fs_iface.file_read = eed_fs_mock_file_read;
-    g_fs_iface.file_write = eed_fs_mock_file_write;
-    g_fs_iface.file_size_get = eed_fs_mock_file_size_get;
-    g_fs_iface.file_delete = eed_fs_mock_file_delete;
+    g_fs_iface.file_read = eed_fs_posix_file_read;
+    g_fs_iface.file_write = eed_fs_posix_file_write;
+    g_fs_iface.file_size_get = eed_fs_posix_file_size_get;
+    g_fs_iface.file_delete = eed_fs_posix_file_delete;
+
+    FILE * p_desc = fopen("read.txt", "w");
+    fwrite(g_buffer_exp, sizeof(uint8_t), sizeof(g_buffer_exp), p_desc);
+    fclose(p_desc);
+    remove("write.txt");
 }
 
-void tearDown(void) 
+void tearDown (void) 
 {
+    remove("read.txt");
+    remove("write.txt");
 }
 
 void test_iface(void)
 {
     eed_fs_iface_s fs_iface =
     {
-        .file_read = eed_fs_mock_file_read,
-        .file_write = eed_fs_mock_file_write,
-        .file_size_get = eed_fs_mock_file_size_get,
-        .file_delete = eed_fs_mock_file_delete,
+        .file_read = eed_fs_posix_file_read,
+        .file_write = eed_fs_posix_file_write,
+        .file_size_get = eed_fs_posix_file_size_get,
+        .file_delete = eed_fs_posix_file_delete,
     };
 }
 
@@ -88,7 +95,7 @@ void test_file_write_null (void)
 void test_file_size_get (void)
 {
     int32_t ret = eed_fs_file_size_get(&g_fs_iface, "read.txt");
-    TEST_ASSERT_EQUAL(strlen(g_buffer_exp), ret);
+    TEST_ASSERT_EQUAL(sizeof(g_buffer_exp), ret);
 }
 
 void test_file_size_get_null (void)

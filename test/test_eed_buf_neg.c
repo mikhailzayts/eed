@@ -89,7 +89,7 @@ void test_line_insert_null (void)
     ret  = eed_buf_line_insert(NULL, NULL, 0);
     TEST_ASSERT_EQUAL(false, ret);
 
-    TEST_ASSERT_EQUAL(0, eed_buf_len(&g_buf));
+    TEST_ASSERT_EQUAL(0, eed_buf_size(&g_buf));
 }
 
 /**
@@ -111,16 +111,15 @@ void test_line_peek_null (void)
     ret = eed_buf_line_peek(NULL, NULL, 0);
     TEST_ASSERT_EQUAL(false, ret);
 
-
     TEST_ASSERT_EQUAL(NULL, p_peeked);
 }
 
 /**
  *  @brief Get buffer length (lines count): Null-pointer check
  */
-void test_len (void)
+void test_size_null (void)
 {
-    TEST_ASSERT_EQUAL_UINT32(-1, eed_buf_len(NULL));
+    TEST_ASSERT_EQUAL_UINT32(-1, eed_buf_size(NULL));
 }
 
 /**
@@ -175,4 +174,19 @@ void test_line_move_neg (void)
 
     ret = eed_buf_line_move(&g_buf, 5, 1);
     TEST_ASSERT_EQUAL(false, ret);
+}
+
+/**
+ *  @brief Try to get line len with NULL buffer pointer
+ */
+void test_line_len_neg (void)
+{
+    char * p_line= "one";
+    eed_buf_line_insert(&g_buf, p_line, 0);
+
+    int32_t ret = eed_buf_line_len(NULL, 0);
+    TEST_ASSERT_EQUAL(-1, ret);
+
+    ret = eed_buf_line_len(&g_buf, 1);
+    TEST_ASSERT_EQUAL(-1, ret);
 }

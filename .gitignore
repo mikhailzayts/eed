@@ -72,3 +72,5 @@ CMakeFiles/
 
 # macOS specific
 .DS_Store
+
+*.txt

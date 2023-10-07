@@ -25,6 +25,7 @@ typedef struct eed_buf_line_s eed_buf_line_s;
 struct eed_buf_line_s
 {
     char * p_str;
+    uint32_t len;
 
     eed_buf_line_s * p_next;
     eed_buf_line_s * p_prev;
@@ -36,7 +37,7 @@ typedef struct eed_buf_s
 
     eed_buf_line_s * p_head;
 
-    uint32_t len;
+    uint32_t size;
 } eed_buf_s;
 
 /** Public function prototypes */
@@ -50,7 +51,8 @@ bool eed_buf_line_copy (eed_buf_s * p_buf, uint32_t pos, uint32_t dest);
 bool eed_buf_line_move (eed_buf_s * p_buf, uint32_t pos, uint32_t dest);
 
 bool eed_buf_line_peek (eed_buf_s * p_buf, char ** pp_line, uint32_t pos);
+int32_t eed_buf_line_len (eed_buf_s * p_buf, uint32_t pos);
 
-int32_t eed_buf_len (eed_buf_s * p_buf);
+int32_t eed_buf_size (eed_buf_s * p_buf);
 
 #endif /** __EED_BUF_H__ */
