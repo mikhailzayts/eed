@@ -19,25 +19,35 @@
 
 /** Private function prototypes */
 
-static bool _is_letter (char chr);
-static bool _is_digit (char chr);
-static uint8_t _letter_to_digit (char chr);
+static bool            _is_letter (char chr);
+static bool            _is_digit (char chr);
+static uint8_t         _letter_to_digit (char chr);
 static eed_parse_cmd_e _parse_cmd (char chr);
 static void _whence_def (eed_parse_pos_s * p_pos, eed_parse_whence_e whence);
-static void _digit_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset, char chr);
-static void _symbol_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset, int32_t * p_sign_offset, char chr);
+static void _digit_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset,
+                            char chr);
+static void _symbol_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset,
+                             int32_t * p_sign_offset, char chr);
 
 /** Public functions */
 
+/**
+ *  @brief       Parse eed command
+ *
+ *  @param[out]  p_str       Command string (null-terminated)
+ *  @param[in]   p_cmd       Parsed command pointer
+ *
+ *  @return      int32_t     Error code
+ */
 int32_t eed_parse (const char * p_str, eed_parse_s * p_cmd)
 {
-    p_cmd->start.whence = EED_PARSE_WHENCE_INVALID;
+    p_cmd->start.whence     = EED_PARSE_WHENCE_INVALID;
     eed_parse_pos_s * p_pos = &(p_cmd->start);
 
-    bool is_positive = true;
-    int32_t tmp_offset = 0;
-    int32_t sign_offset = 0;
-    uint32_t len = strlen(p_str);
+    bool     is_positive = true;
+    int32_t  tmp_offset  = 0;
+    int32_t  sign_offset = 0;
+    uint32_t len         = strlen(p_str);
 
     for (uint32_t idx = 0; idx < len; idx++)
     {
@@ -48,7 +58,7 @@ int32_t eed_parse (const char * p_str, eed_parse_s * p_cmd)
 
             p_pos->offset += sign_offset + tmp_offset;
             sign_offset = 0;
-            tmp_offset = 0;
+            tmp_offset  = 0;
             if (p_pos == &(p_cmd->start))
             {
                 p_cmd->end = p_cmd->start;
@@ -57,7 +67,7 @@ int32_t eed_parse (const char * p_str, eed_parse_s * p_cmd)
             p_pos = &(p_cmd->dest);
         }
 
-        _symbol_process (p_pos, &tmp_offset, &sign_offset, p_str[idx]);
+        _symbol_process(p_pos, &tmp_offset, &sign_offset, p_str[idx]);
 
         if (true == _is_digit(p_str[idx]))
         {
@@ -69,8 +79,8 @@ int32_t eed_parse (const char * p_str, eed_parse_s * p_cmd)
         {
             p_pos->offset += sign_offset + tmp_offset;
             sign_offset = 0;
-            tmp_offset = 0;
-            p_pos = &(p_cmd->end);
+            tmp_offset  = 0;
+            p_pos       = &(p_cmd->end);
         }
     }
     p_pos->offset += sign_offset + tmp_offset;
@@ -101,39 +111,39 @@ static eed_parse_cmd_e _parse_cmd (char chr)
     {
         case 'p':
             return EED_PARSE_CMD_PRINT;
-        break;
+            break;
 
         case 'i':
             return EED_PARSE_CMD_INSERT;
-        break;
+            break;
 
         case 'a':
             return EED_PARSE_CMD_APPEND;
-        break;
+            break;
 
         case 'c':
             return EED_PARSE_CMD_CHANGE;
-        break;
+            break;
 
         case 'd':
             return EED_PARSE_CMD_DELETE;
-        break;
+            break;
 
         case 'm':
             return EED_PARSE_CMD_MOVE;
-        break;
+            break;
 
         case 'j':
             return EED_PARSE_CMD_JOIN;
-        break;
+            break;
 
         case 'q':
             return EED_PARSE_CMD_QUIT;
-        break;
+            break;
 
         default:
             return EED_PARSE_CMD_PRINT;
-        break;
+            break;
     }
 }
 
@@ -155,7 +165,8 @@ static uint8_t _letter_to_digit (char chr)
     return chr - 48;
 }
 
-static void _digit_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset, char chr)
+static void _digit_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset,
+                            char chr)
 {
     if (0 == *p_tmp_offset)
     {
@@ -181,30 +192,31 @@ static void _digit_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset, cha
     *p_tmp_offset = 0;
 }
 
-static void _symbol_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset, int32_t * p_sign_offset, char chr)
+static void _symbol_process (eed_parse_pos_s * p_pos, int32_t * p_tmp_offset,
+                             int32_t * p_sign_offset, char chr)
 {
-        switch (chr)
-        {
-            case '.':
-                _whence_def(p_pos, EED_PARSE_WHENCE_CURR);
+    switch (chr)
+    {
+        case '.':
+            _whence_def(p_pos, EED_PARSE_WHENCE_CURR);
             break;
 
-            case '$':
-                _whence_def(p_pos, EED_PARSE_WHENCE_END);
+        case '$':
+            _whence_def(p_pos, EED_PARSE_WHENCE_END);
             break;
 
-            case '+':
-                *p_sign_offset += *p_tmp_offset;
-                *p_tmp_offset = 0;
-                (*p_tmp_offset)++;
-                _whence_def(p_pos, EED_PARSE_WHENCE_CURR);
+        case '+':
+            *p_sign_offset += *p_tmp_offset;
+            *p_tmp_offset = 0;
+            (*p_tmp_offset)++;
+            _whence_def(p_pos, EED_PARSE_WHENCE_CURR);
             break;
 
-            case '-':
-                *p_sign_offset += *p_tmp_offset;
-                *p_tmp_offset = 0;
-                (*p_tmp_offset)--;
-                _whence_def(p_pos, EED_PARSE_WHENCE_CURR);
+        case '-':
+            *p_sign_offset += *p_tmp_offset;
+            *p_tmp_offset = 0;
+            (*p_tmp_offset)--;
+            _whence_def(p_pos, EED_PARSE_WHENCE_CURR);
             break;
-        }
+    }
 }
